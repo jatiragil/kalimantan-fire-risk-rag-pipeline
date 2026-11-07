@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: raw_weather
+        columns:
+          - name: observation_date
+            tests: [not_null]
+          - name: city_name
+            tests: [not_null]

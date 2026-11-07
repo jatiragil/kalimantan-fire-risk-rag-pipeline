@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: fct_weather_anomaly
+    tests:
+      # 1. Memastikan tidak ada duplikasi (1 kota, 1 tanggal hanya boleh ada 1 baris)
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - city_name
+            - observation_date
+    columns:
+      - name: city_name
+        tests: [not_null]
+      - name: observation_date
+        tests: [not_null]
+      - name: z_score
+        tests:
+          - not_null
+          # 2. Memastikan Z-Score tidak meledak (antara -10 sampai 10)
+          - dbt_utils.accepted_range:
+              min_value: -10
+              max_value: 10
+      - name: is_extreme_temperature
+        tests:
+          # 3. Memastikan isinya hanya TRUE atau FALSE (bukan string "ya" atau 1)
+          - accepted_values:
+              values: [true, false]

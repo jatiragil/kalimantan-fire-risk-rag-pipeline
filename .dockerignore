@@ -1,0 +1,10 @@
+venv/
+.git/
+data/
+logs/
+__pycache__/
+*.pyc
+weather_analytics/target/
+weather_analytics/logs/
+weather_analytics/dbt_packages/
+weather_analytics/.user.yml

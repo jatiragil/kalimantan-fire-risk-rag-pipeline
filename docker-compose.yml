@@ -1,0 +1,82 @@
+version: '3.8'
+
+x-airflow-common:
+  &airflow-common
+  build:
+    context: .
+    dockerfile: airflow.Dockerfile
+  user: "${AIRFLOW_UID:-1000}:0"
+  environment:
+    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_AIRFLOW_USER}:${DB_AIRFLOW_PASSWORD}@postgres-airflow/${DB_AIRFLOW_DB}
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW__CORE__PARALLELISM=2
+    - AIRFLOW__CORE__DAG_CONCURRENCY=2
+    - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW__WEBSERVER__SECRET_KEY}
+    - AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT=300
+    - AIRFLOW__WEBSERVER__WORKERS=1
+    - DATABASE_URL=${DATABASE_URL}
+    - GEMINI_API_KEY=${GEMINI_API_KEY}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./src:/opt/airflow/src
+    - ./weather_analytics:/opt/airflow/weather_analytics
+    - ./data:/opt/airflow/data
+    - ~/.dbt:/home/airflow/.dbt
+  depends_on:
+    postgres-airflow:
+      condition: service_healthy
+
+services:
+  postgres-airflow:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${DB_AIRFLOW_USER}
+      POSTGRES_PASSWORD: ${DB_AIRFLOW_PASSWORD}
+      POSTGRES_DB: ${DB_AIRFLOW_DB}
+    volumes:
+      - airflow_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_AIRFLOW_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 256m
+
+  airflow-init:
+    <<: *airflow-common
+    command: bash -c "sleep 10 && airflow db upgrade"
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_AIRFLOW_USER}:${DB_AIRFLOW_PASSWORD}@postgres-airflow/${DB_AIRFLOW_DB}
+      - _AIRFLOW_DB_UPGRADE=true
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    mem_limit: 512m
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+    mem_limit: 512m
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    mem_limit: 512m
+
+volumes:
+  airflow_db:

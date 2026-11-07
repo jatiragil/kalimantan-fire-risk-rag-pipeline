@@ -1,0 +1,8 @@
+.env
+venv/
+__pycache__/
+*.pyc
+logs/
+airflow_db/
+dbt_packages/
+target/
