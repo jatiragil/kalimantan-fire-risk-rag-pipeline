@@ -223,7 +223,20 @@ with tab1:
         elif val == 'SIAGA': return 'background-color: #ff8c00; color: white;' # Oranye
         elif val == 'WASPADA': return 'background-color: #ffd700; color: black;' # Kuning
         else: return 'background-color: #21c354; color: white;' # Hijau (AMAN)
-    st.dataframe(df_kota.style.map(color_status, subset=['risk_status_forecast']), width="stretch")
+    
+    # Rename kolom
+    df_display = df_kota.copy()
+    df_display = df_display.rename(columns={
+        'city_name': 'Wilayah',
+        'observation_date': 'Tanggal',
+        'risk_status_forecast': 'Status Risiko',
+        'avg_temp_forecast_3d': 'Suhu (°C)',
+        'avg_rain_forecast_3d': 'Hujan (mm)',
+        'avg_wind_forecast_3d': 'Angin (km/j)',
+        'avg_rh_forecast_3d': 'Kelembapan (%)'
+    })
+  
+    st.dataframe(df_display.style.map(color_status, subset=['Status Risiko']), width="stretch")
     st.divider()
     st.header("Tren Historis (10 Tahun)")
     df_trend = load_monthly_trend(kota_pilihan)

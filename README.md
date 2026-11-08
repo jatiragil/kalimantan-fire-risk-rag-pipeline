@@ -7,12 +7,10 @@ Bridging the gap between raw weather data and actionable fire risk intelligence.
 
 Most of my previous projects relied on clean, pre-packaged e-commerce datasets. I wanted to build something with actual friction. Peatland fires (Karhutla) in Kalimantan presented a perfect engineering challenge: it's a messy, high-stakes problem where a single miscalculated threshold or a hallucinated AI response can actually mean a false alarm (or worse, a missed one). I built this pipeline to see if a Modern Data Stack could handle the unpredictability of real-world climatology.
 
-[📸 SCREENSHOT 1: Taruh gambar tabel Streamlit Anda di sini]
-
+![Dashboard](docs/images/dashboard.png)
 *Dashboard showing 5-level risk assessment (Calibrated via P90 historical data).*
 
-[📸 SCREENSHOT 2: Taruh gambar Chatbot AI Anda di sini]
-
+![Chatbot](docs/images/chatbot.png)
 *Hybrid RAG Assistant answering a query with contextual citations from BMKG documents.*
 
 ## 📂 Project Structure
@@ -32,6 +30,10 @@ kalimantan-fire-risk-rag-pipeline/
 ```
 
 ## 🏗️ Architecture & Data Flow
+
+### ⚙️ Orchestration
+![Airflow](docs//images/airflow.png)
+*Airflow DAG showing the successful execution of the weather ingestion, dbt transformation, and document embedding.*
 
 This project uses a Dual-Pipeline architecture:
 
@@ -131,4 +133,6 @@ To prove the system is factual and cannot be tricked into hallucinating, I ran a
 
 ---
 
-Author: Jati Ragil | GitHub | LinkedIn
+Author: Jati Ragil
+- GitHub: [@jatiragil](https://github.com/jatiragil)
+- LinkedIn : [@jatiragil](linkedin.com/in/jati-ragil-19893a446)
