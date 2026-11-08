@@ -198,7 +198,7 @@ def ask_chatbot(user_question, city_context):
     return "Maaf, layanan AI sedang sibuk atau belum dikonfigurasi. Silakan coba beberapa saat lagi.", doc_context
 
 # --- UI UTAMA ---
-st.title("🔥 Kalimantan Fire Risk Intelligence")
+st.title("Kalimantan Fire Risk Intelligence")
 st.markdown("Sistem Peringatan Dini Karhutla berbasis Data Cuaca & AI.")
 
 # Sidebar untuk memilih kota
