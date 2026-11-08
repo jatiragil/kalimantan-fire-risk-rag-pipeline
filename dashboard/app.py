@@ -29,17 +29,19 @@ engine = get_db_engine()
 # 1. Gemini
 gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# 2. IteraCompute (Kompatibel dengan OpenAI)
+# 2. IteraCompute
+itera_key = os.getenv("ITERACOMPUTE_API_KEY")
 itera_client = openai.OpenAI(
     base_url="https://api.iteracompute.com/v1", 
     api_key=os.getenv("ITERACOMPUTE_API_KEY")
-)
+) if itera_key else None
 
-# 3. OpenRouter (Kompatibel dengan OpenAI)
+# 3. OpenRouter
+openrouter_key = os.getenv("OPENROUTER_API_KEY")
 openrouter_client = openai.OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
-)
+) if openrouter_key else None
 
 # --- FUNGSI CACHING ---
 @st.cache_data(ttl=600)
@@ -156,31 +158,7 @@ def ask_chatbot(user_question, city_context):
 
     # --- STRATEGI FALLBACK BERLAPIS ---
     
-    # Lapis 1: IteraCompute (Qwen)
-    try:
-        response = itera_client.chat.completions.create(
-            model="qwen/qwen3.8-27b",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            timeout=10.0
-        )
-        return response.choices[0].message.content, doc_context
-    except Exception as e:
-        logger.warning(f"IteraCompute gagal: {e}. Beralih ke OpenRouter...")
-
-    # Lapis 2: OpenRouter (Llama 3.3 70B)
-    try:
-        response = openrouter_client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            timeout=10.0
-        )
-        return response.choices[0].message.content, doc_context
-    except Exception as e:
-        logger.warning(f"OpenRouter gagal: {e}. Beralih ke Gemini...")
-
-    # Lapis 3: Gemini 3.5 Flash (Jaring Pengaman)
+    # Lapis 1: Gemini 3.5 Flash
     try:
         response = gemini_client.models.generate_content(
             model='gemini-3.5-flash-lite', 
@@ -188,8 +166,36 @@ def ask_chatbot(user_question, city_context):
         )
         return response.text, doc_context
     except Exception as e:
-        logger.error(f"Semua AI gagal. Error terakhir: {e}")
-        return "Maaf, layanan AI sedang sibuk. Silakan coba beberapa saat lagi.", doc_context
+        logger.warning(f"Gemini gagal: {e}. Beralih ke lapisan berikutnya...")
+
+    # Lapis 2: IteraCompute (hanya jalan jika API Key diisi)
+    if itera_client:
+        try:
+            response = itera_client.chat.completions.create(
+                model="qwen/qwen3.8-27b",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                timeout=5.0
+            )
+            return response.choices[0].message.content, doc_context
+        except Exception as e:
+            logger.warning(f"IteraCompute gagal: {e}. Beralih ke OpenRouter...")
+
+    # Lapis 3: OpenRouter (hanya jalan jika API Key diisi)
+    if openrouter_client:
+        try:
+            response = openrouter_client.chat.completions.create(
+                model="meta-llama/llama-3.3-70b-instruct", 
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                timeout=10.0
+            )
+            return response.choices[0].message.content, doc_context
+        except Exception as e:
+            logger.error(f"Semua AI gagal. Error terakhir: {e}")
+            
+    # Jika semua lapisan di atas gagal atau di-skip
+    return "Maaf, layanan AI sedang sibuk atau belum dikonfigurasi. Silakan coba beberapa saat lagi.", doc_context
 
 # --- UI UTAMA ---
 st.title("🔥 Kalimantan Fire Risk Intelligence")
@@ -199,6 +205,10 @@ st.markdown("Sistem Peringatan Dini Karhutla berbasis Data Cuaca & AI.")
 st.sidebar.header("Pilih Wilayah")
 df_risk_awal = load_risk_data()
 kota_pilihan = st.sidebar.selectbox("Kota/Kabupaten:", df_risk_awal['city_name'].unique())
+
+st.sidebar.markdown("---")
+st.sidebar.caption("Created by **Jati Ragil**")
+st.sidebar.caption("[GitHub](https://github.com/jatiragil) | [LinkedIn](https://linkedin.com/in/jatiragil)")
 
 tab1, tab2 = st.tabs(["📊 Dashboard Risiko (Forecast)", "🤖 AI Assistant"])
 
@@ -213,14 +223,13 @@ with tab1:
         elif val == 'SIAGA': return 'background-color: #ff8c00; color: white;' # Oranye
         elif val == 'WASPADA': return 'background-color: #ffd700; color: black;' # Kuning
         else: return 'background-color: #21c354; color: white;' # Hijau (AMAN)
-    st.dataframe(df_kota.style.map(color_status, subset=['risk_status_forecast']), use_container_width=True)
-
+    st.dataframe(df_kota.style.map(color_status, subset=['risk_status_forecast']), width="stretch")
     st.divider()
     st.header("Tren Historis (10 Tahun)")
     df_trend = load_monthly_trend(kota_pilihan)
     
     fig = px.line(df_trend, x='month', y='avg_temp', title=f"Rata-rata Suhu Bulanan - {kota_pilihan}")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with tab2:
     st.header(f"Tanya AI Seputar Cuaca & Karhutla ({kota_pilihan})")
