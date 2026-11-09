@@ -109,6 +109,8 @@ Because of local RAM constraints, Airflow is isolated using Docker Compose Profi
 docker compose --profile airflow up -d
 ```
 
+(Access Airflow UI at http://localhost:8080)
+
 ## 🧪 Evaluation: Anti-Hallucination & Guardrails
 
 To prove the system is factual and cannot be tricked into hallucinating, I ran a "Golden Dataset" test using a custom `evaluate.py` script. The script tests three distinct scenarios: Data Retrieval (SQL), Document Retrieval (RAG), and Out-of-Scope Guardrails.
@@ -121,7 +123,6 @@ To prove the system is factual and cannot be tricked into hallucinating, I ran a
 
 *The system successfully refuses to answer out-of-scope questions, proving that the prompt engineering and RAG boundaries are working as intended. If the AI cannot find the answer in the provided SQL data or BMKG documents, it is explicitly designed to admit its limitations rather than hallucinate.*
 
-(Access Airflow UI at http://localhost:8080)
 
 ## 🔮 Future Work
 

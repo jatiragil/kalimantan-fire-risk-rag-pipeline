@@ -30,7 +30,7 @@ else:
     sys.exit(1)
 
 def chunk_text(text: str, max_chars: int = 600, overlap: int = 100) -> list:
-    """Memotong teks berdasarkan paragraf (Paragraph-Aware Chunking)."""
+    """Memotong teks berdasarkan paragraf (paragraph-aware chunking)."""
     paragraphs = [p.strip() for p in re.split(r'\n+', text) if p.strip()]
     chunks = []
     current_chunk = ""
