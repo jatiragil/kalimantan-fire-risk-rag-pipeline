@@ -1,4 +1,4 @@
-# 🔥 Kalimantan Peatland Fire Risk Intelligence
+# Kalimantan Peatland Fire Risk Intelligence
 
 An End-to-End Data & AI Pipeline for Peatland Fire Risk Mitigation in Kalimantan.
 Bridging the gap between raw weather data and actionable fire risk intelligence.
@@ -29,7 +29,7 @@ kalimantan-fire-risk-rag-pipeline/
 └── README.md
 ```
 
-## 🏗️ Architecture & Data Flow
+## Architecture & Data Flow
 
 ### ⚙️ Orchestration
 ![Airflow](docs//images/airflow.png)
@@ -45,7 +45,7 @@ This project uses a Dual-Pipeline architecture:
 
 - **Serving:** Streamlit displays the dashboard and serves the Hybrid RAG Chatbot.
 
-## 🧠 Key Engineering Decisions
+## Key Engineering Decisions
 
 - **Why Rule-Based Climatology?** I intentionally avoided Machine Learning. In wildfire prediction, ML requires historical labeled hotspot data (which is scarce). Instead, I used a transparent, rule-based approach aligned with the Fire Weather Index (FWI) standard. The risk is calculated using a 7-day rolling window of Temperature, Precipitation, Wind Speed, and Relative Humidity.
 
@@ -53,7 +53,7 @@ This project uses a Dual-Pipeline architecture:
 
 - **Graceful Degradation:** Free-tier APIs are a double-edged sword. To ensure the demo never breaks, I built a multi-provider fallback chain (IteraCompute -> OpenRouter -> Gemini) with a strict 10-second timeout. It makes the system feel robust, even under resource constraints.
 
-## 🚧 Challenges & Trade-offs
+## Challenges & Trade-offs
 
 - **Surviving on 3.3GB of RAM:** Running the full Airflow stack alongside Streamlit on my 3.3GB RAM laptop caused constant OOM (Out of Memory) errors. The Fix: I used Docker Compose Profiles. Now, Airflow (profile: airflow) and Streamlit (profile: dashboard) never run at the same time. It forced me to understand container resource isolation.
 
@@ -63,53 +63,54 @@ This project uses a Dual-Pipeline architecture:
 
 - **The SQL "Edge Effect":** When using RANGE BETWEEN INTERVAL '1 day' FOLLOWING AND '3 days' FOLLOWING for the forecast, the last day of the dataset always yielded NULL. The Fix: I filtered out NULL values in the Streamlit query so the dashboard only displays valid predictions, preventing the UI from crashing.
 
+- **The Schema Drift & Reproducibility Trap:** Mid-development, I added a `relative_humidity_mean` column to the database using a manual `ALTER TABLE` query. I quickly realized this was a mistake: a recruiter cloning the repo would fail because `setup_db.py` didn't have this column. *The Lesson:* I treated `setup_db.py` as the Single Source of Truth and integrated it as the **first task** inside the Airflow DAG. Now, the pipeline is truly "zero-config" and reproducible from scratch.
+
 ## ⚠️ Limitations
 
-- The current RAG uses a static JSON snapshot of BMKG documents. In a real production environment, this would be an automated scraper running via Airflow.
+- **Forecast Smoothing (The Moving Average Trap):** The risk calculation uses a 3-day moving average for the forecast. While this reduces noise, it also means a single extreme spike (e.g., one day with 40°C) might be statistically "smoothed out" and not trigger an 'EXTREME' alert. A more sophisticated approach would use daily peak values for acute warnings.
+- **No Re-ranking in RAG:** The Hybrid RAG uses raw cosine similarity (via `pgvector`'s HNSW index) to retrieve BMKG documents. It does not implement a secondary Cross-Encoder re-ranker. While fast and sufficient for this scale, enterprise-grade RAG systems often add a re-ranking step to improve retrieval precision.
+- **Static JSON Snapshot for BMKG Docs:** The current RAG uses a static JSON snapshot of BMKG documents. In a real production environment, this would be an automated scraper or RSS feed ingestion running via Airflow.
+- **Rule-Based Proxy vs Physical Model:** The rule-based logic (Temperature, Rain, Wind, RH) is a simplified meteorological proxy. It is not a full physical model like the Canadian Forest Fire Weather Index (FWI), which accounts for fuel moisture codes (FFMC, DMC, DC) and deep organic soil drying.
+- **LLM Fallback Latency:** While the Multi-Provider Fallback (Gemini -> Itera -> OpenRouter) ensures high availability, the free-tier APIs can occasionally experience cold starts or rate-limit delays, adding a few seconds of latency to the chatbot response.
+- **Local UI vs. Dockerized Infrastructure:** Streamlit is run locally (not inside Docker) to conserve RAM on a 3.3GB machine. While this is a pragmatic trade-off for local development, a production deployment would containerize the UI alongside the orchestrator.
 
-- Streamlit is run locally (not in Docker) to conserve RAM, while Airflow runs in Docker.
+## 🚀 How to Run (Zero-Config with Docker)
 
-- The rule-based system is a proxy. It is not a full physical model like the Canadian Forest Fire Weather Index (FWI).
-
-## 🚀 How to Run (Local Reproducibility)
+This project is fully **Dockerized**. You don't need to manually run any database scripts. Just follow these steps:
 
 ### 1. Clone & Setup Environment
-
 ```bash
 git clone https://github.com/jatiragil/kalimantan-fire-risk-rag-pipeline.git
 cd kalimantan-fire-risk-rag-pipeline
 cp .env.example .env
 ```
+Note: Open .env and fill in your actual DATABASE_URL and GEMINI_API_KEY. (IteraCompute & OpenRouter are optional for the Multi-Provider Fallback).
 
-*Note: Open .env and fill in your actual DATABASE_URL and GEMINI_API_KEY.
-
-Gemini (Required): Get it for free at Google AI Studio.
-
-IteraCompute & OpenRouter (Optional): Used for the Multi-Provider Fallback feature. If left empty, the system will gracefully skip them. Get them at IteraCompute and OpenRouter.*
-
-### 2. Database & dbt Setup
-
+### 2. Start Airflow & Database (Docker)
 ```bash
-python -m src.setup_db
-python -m src.ingest_weather
-cd weather_analytics && dbt run && dbt test && cd ..
+docker compose up -d --build
 ```
 
-### 3. Run Streamlit (Local UI)
+(This will start the Airflow Webserver, Scheduler, and its internal PostgreSQL. It might take 2-3 minutes on the first build).
+### 3. Run the Pipeline (Airflow UI)
 
+- Open http://localhost:8080 (Username: admin, Password: admin).
+- Find the DAG named weather_karhutla_pipeline.
+- Unpause the DAG (toggle button on the left).
+- Click the Play (▶️) button on the right and select Trigger DAG.
+- The DAG will automatically run setup_db.py, ingest 10 years of weather data, run dbt transformations, and embed BMKG documents.
+
+### 4. Run Streamlit (Local UI)
+
+To save RAM on low-spec machines, Streamlit runs locally (not in Docker).
 ```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 streamlit run dashboard/app.py
 ```
 
-### 4. (Optional) Run Airflow via Docker
-
-Because of local RAM constraints, Airflow is isolated using Docker Compose Profiles.
-
-```bash
-docker compose --profile airflow up -d
-```
-
-(Access Airflow UI at http://localhost:8080)
+(Open http://localhost:8501 in your browser).
 
 ## 🧪 Evaluation: Anti-Hallucination & Guardrails
 

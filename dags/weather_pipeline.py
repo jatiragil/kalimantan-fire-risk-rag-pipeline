@@ -18,32 +18,36 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    # Task 1: Ingest Cuaca
+    # TASK 1: setup database
+    task_setup_db = BashOperator(
+        task_id='setup_database',
+        bash_command='cd /opt/airflow && python -m src.setup_db',
+    )
+
+    # Task 2: Ingest cuaca
     task_ingest = BashOperator(
         task_id='ingest_weather_data',
         bash_command='cd /opt/airflow && python -m src.ingest_weather',
     )
 
-    # Task 2: Transformasi Cuaca (dbt run)
+    # Task 3: Transformasi cuaca (dbt run)
     task_dbt_run = BashOperator(
         task_id='dbt_run',
         bash_command='cd /opt/airflow/weather_analytics && dbt run',
     )
 
-    # Task 3: Testing Cuaca (dbt test)
+    # Task 4: Testing cuaca (dbt test)
     task_dbt_test = BashOperator(
         task_id='dbt_test',
         bash_command='cd /opt/airflow/weather_analytics && dbt test',
     )
 
-    # Task 4: Embedding Dokumen (RAG)
+    # Task 5: Embedding dokumen (RAG)
     task_embed = BashOperator(
         task_id='embed_documents',
         bash_command='cd /opt/airflow && python -m src.process_docs',
     )
 
-    # TOPOLOGY
-    task_ingest >> [task_dbt_run, task_embed]
-    
-    # Jalur dbt harus berurutan
+    # setup DB -> Ingest -> (dbt_run & embed secara paralel) -> dbt_test
+    task_setup_db >> task_ingest >> [task_dbt_run, task_embed]
     task_dbt_run >> task_dbt_test
