@@ -69,15 +69,16 @@ def setup_database() -> None:
                 log.info("Membuat tabel raw_weather...")
                 cur.execute("""
                     CREATE TABLE IF NOT EXISTS raw_weather (
-                        id                SERIAL PRIMARY KEY,
-                        city_name         VARCHAR(100) NOT NULL,
-                        observation_date  DATE         NOT NULL,
-                        temperature_max   FLOAT,
-                        precipitation_sum FLOAT,
-                        wind_speed_max    FLOAT,
-                        data_source       VARCHAR(20)  NOT NULL
-                                          CHECK (data_source IN ('archive','forecast')),
-                        ingested_at       TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        id                     SERIAL PRIMARY KEY,
+                        city_name              VARCHAR(100) NOT NULL,
+                        observation_date       DATE         NOT NULL,
+                        temperature_max        FLOAT,
+                        precipitation_sum      FLOAT,
+                        wind_speed_max         FLOAT,
+                        relative_humidity_mean FLOAT,
+                        data_source            VARCHAR(20)  NOT NULL
+                                               CHECK (data_source IN ('archive','forecast')),
+                        ingested_at            TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         CONSTRAINT unique_city_observation
                             UNIQUE (city_name, observation_date)
                     );

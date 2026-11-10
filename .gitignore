@@ -6,3 +6,5 @@ logs/
 airflow_db/
 dbt_packages/
 target/
+.user.yml
+profiles.yml
