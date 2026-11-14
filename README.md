@@ -118,7 +118,7 @@ docker compose up -d --build
     * Run dbt run and dbt test via the provided profiles.yml.
     * Run ingest_documents.py to OCR BMKG PDFs and embed them into pgvector.
 
-### ### 4. Run Streamlit (Local UI)
+### 4. Run Streamlit (Local UI)
 To save RAM on low-spec machines, Streamlit runs locally (not inside Docker). It uses a separate, lightweight requirements file.
 
 ```bash
