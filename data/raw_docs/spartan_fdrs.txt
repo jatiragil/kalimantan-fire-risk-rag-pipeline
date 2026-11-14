@@ -1,0 +1,54 @@
+## SPARTAN BMKG
+
+### 1. Fine Fuel Moisture Code (FFMC)
+Menggambarkan tingkat kekeringan bahan bakar halus seperti daun kering, rumput, dan ranting kecil di permukaan tanah.
+Sensitif terhadap hujan, suhu, kelembapan, dan angin
+Bereaksi cepat terhadap perubahan cuaca harian
+Nilai tinggi → bahan bakar sangat kering dan mudah terbakar
+Fungsi utama:
+Menunjukkan kemudahan api untuk menyala (ignition potential), terutama akibat aktivitas manusia.
+
+### 2. Duff Moisture Code (DMC)
+Menggambarkan kelembapan lapisan organik menengah (serasah dan humus dangkal).
+Bereaksi terhadap hujan sedang dan kekeringan beberapa hari–minggu
+Tidak secepat FFMC, tetapi lebih stabil
+Nilai tinggi → lapisan organik semakin kering
+Fungsi utama:
+Menunjukkan potensi kebakaran yang bertahan lebih lama dan sulit dipadamkan.
+
+### 3. Drought Code (DC)
+Menggambarkan tingkat kekeringan lapisan tanah dalam dan bahan bakar besar.
+Mewakili efek kekeringan jangka panjang
+Sangat relevan pada musim kemarau panjang atau El Niño
+Nilai tinggi → kondisi tanah dan gambut sangat kering
+Fungsi utama:
+Menilai potensi kebakaran besar dan kebakaran gambut, yang berdampak luas dan berkepanjangan.
+
+### 4. Build Up Index (BUI)
+Kombinasi antara DMC dan DC, yang menunjukkan akumulasi bahan bakar kering.
+Mewakili jumlah bahan bakar yang tersedia untuk terbakar
+Nilai tinggi → energi api berpotensi besar
+Fungsi utama:
+Menunjukkan intensitas kebakaran yang mungkin terjadi apabila api menyala.
+
+### 5. Initial Spread Index (ISI)
+Menggambarkan potensi kecepatan penjalaran api pada tahap awal kebakaran.
+Dipengaruhi oleh kecepatan angin dan FFMC
+Nilai tinggi → api menyebar cepat
+Fungsi utama:
+Menilai risiko penyebaran cepat api, terutama di area terbuka dan berangin.
+
+### 6. Fire Weather Index (FWI)
+Indeks utama dan komprehensif yang menggabungkan ISI dan BUI.
+Mewakili tingkat bahaya kebakaran secara keseluruhan
+Digunakan sebagai indikator operasional utama
+Nilai tinggi → risiko kebakaran tinggi hingga ekstrem
+Fungsi utama:
+Sebagai acuan utama peringatan dini, penentuan status siaga, dan pengambilan keputusan mitigasi kebakaran.
+
+## Hubungan Antar Indeks
+FFMC → seberapa mudah api menyala
+ISI → seberapa cepat api menyebar
+DMC & DC → seberapa besar dan lama kebakaran bertahan
+BUI → seberapa besar energi api
+FWI → ringkasan keseluruhan tingkat bahaya kebakaran

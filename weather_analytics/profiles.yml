@@ -1,0 +1,11 @@
+weather_analytics:
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DB_HOST', 'postgres') }}"
+      user: "{{ env_var('DB_USER', 'postgres') }}"
+      pass: "{{ env_var('DB_PASS', 'postgres') }}"
+      port: 5432
+      dbname: "{{ env_var('DB_NAME', 'karhutlarag') }}"
+      schema: public
+  target: dev

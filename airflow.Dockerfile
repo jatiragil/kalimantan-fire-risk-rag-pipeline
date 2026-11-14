@@ -1,11 +1,10 @@
 FROM apache/airflow:2.8.1-python3.11
 
-# Pindah ke root untuk install sistem operasi
 USER root
-
-# Kembali ke user airflow
+RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-ind
+COPY requirements.txt /
 USER airflow
 
-# Copy requirements.txt dan install
-COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
+
+RUN cd /opt/airflow/weather_analytics && dbt deps || true

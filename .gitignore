@@ -1,8 +1,29 @@
+# --- SECRETS & ENVIRONMENT ---
 .env
+*.env
+.user.yml
+
+# --- PYTHON ---
 venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# --- AIRFLOW & DBT ---
 logs/
 airflow_db/
-dbt_packages/
-target/
+weather_analytics/dbt_packages/
+weather_analytics/target/
+weather_analytics/logs/
+
+# --- DATA & CACHE ---
+data/raw_docs/*.ocr.txt
+data/raw_docs/*.pdf
+*.duckdb
+*.sqlite3
+
+# --- OS ---
+.DS_Store
+Thumbs.db
