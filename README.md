@@ -55,6 +55,7 @@ This project uses a **Dual-Pipeline architecture** with a strong separation of c
 - **Metadata-Aware Retrieval:** Chunks are enriched with `JSONB` metadata (e.g., `[Bagian: BAB I]`). The retrieval system uses this metadata to strictly filter and inject the exact context into the prompt, drastically reducing hallucinations.
 - **Intent-Based & Anti-Hallucination Prompting:** The LLM distinguishes between *Hybrid Queries* (Weather/SQL) and *Pure RAG Queries* (SOP/Definitions). Strict guardrails force the model to reply *"Maaf, informasi tersebut tidak disebutkan..."* if the facts are missing from the retrieved documents.
 - **Graceful Degradation:** A multi-provider fallback chain (IteraCompute -> OpenRouter -> Gemini) with a strict 10-second timeout ensures the demo never breaks due to free-tier API limits.
+- **Dual-Mode Database Architecture:** The pipeline is designed to be completely zero-config for local development by spinning up a local `pgvector` container. However, it is also fully compatible with cloud-native serverless databases. I developed and tested this pipeline using **Neon.tech** (Serverless Postgres) to leverage its connection pooling and auto-scaling capabilities, which can be activated simply by changing the environment variables.
 
 ## Challenges & Trade-offs
 

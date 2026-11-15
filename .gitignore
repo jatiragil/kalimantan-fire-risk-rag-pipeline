@@ -20,7 +20,6 @@ weather_analytics/logs/
 
 # --- DATA & CACHE ---
 data/raw_docs/*.ocr.txt
-data/raw_docs/*.pdf
 *.duckdb
 *.sqlite3
 

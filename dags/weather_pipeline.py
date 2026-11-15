@@ -29,6 +29,10 @@ with DAG(
         task_id='ingest_weather_data',
         bash_command='cd /opt/airflow && python -m src.ingest_weather',
     )
+    task_dbt_deps = BashOperator(
+        task_id='dbt_deps',
+        bash_command='cd /opt/airflow/weather_analytics && dbt deps',
+    )
 
     # TASK 3: Transformasi Cuaca (dbt run)
     task_dbt_run = BashOperator(
@@ -53,5 +57,5 @@ with DAG(
     # 1. Setup DB selesai -> Ingest Cuaca
     # 2. Ingest Cuaca selesai -> Jalan paralel: (dbt_run) DAN (ingest_documents)
     # 3. dbt_run selesai -> dbt_test
-    task_setup_db >> task_ingest_weather >> [task_dbt_run, task_ingest_docs]
-    task_dbt_run >> task_dbt_test
+    task_setup_db >> task_ingest_weather >> [task_dbt_deps, task_ingest_docs]
+    task_dbt_deps >> task_dbt_run >> task_dbt_test
