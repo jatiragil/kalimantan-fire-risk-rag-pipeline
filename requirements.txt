@@ -1,7 +1,15 @@
+# Database & Data Processing
 dbt-postgres
 psycopg2-binary
+pandas
+SQLAlchemy
+
+# Document Processing (OCR & Chunking)
+pymupdf
+pytesseract
+Pillow
+
+# AI & API Clients
 google-genai
 python-dotenv
 requests
-beautifulsoup4
-pypdf

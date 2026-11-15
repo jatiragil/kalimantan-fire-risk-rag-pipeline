@@ -1,0 +1,95 @@
+
+Glosarium Istilah BMKG
+
+Kamus istilah dan definisi seputar meteorologi, klimatologi, geofisika, dan kebencanaan untuk memudahkan masyarakat memahami informasi BMKG.
+
+Awan Cumulonimbus (Cb)
+
+Awan konvektif vertikal yang sangat besar, padat, dan menjulang tinggi menyerupai gunung atau menara. Merupakan awan pembawa badai petir, hujan lebat, kilat, angin kencang (microburst), dan hujan es.
+
+El Niño
+
+Fenomena anomali kenaikan suhu permukaan laut di Samudra Pasifik bagian tengah dan timur, yang umumnya berdampak pada berkurangnya curah hujan dan kekeringan di sebagian besar wilayah Indonesia.
+Episentrum
+
+Titik di permukaan bumi yang berada tepat vertikal di atas hiposentrum / pusat patahan gempa bumi di bawah tanah.
+
+METAR
+
+Aerodrome Routine Meteorological Report — laporan sandi cuaca rutin bandara yang diamati setiap 30 atau 60 menit sekali untuk operasional penerbangan.
+Hiposentrum (Pusat Gempa)
+
+Titik atau sumber di dalam kerak bumi tempat terjadinya pelepasan energi gelombang seismik pertama kali yang menyebabkan gempa bumi.
+
+La Niña
+
+Fenomena anomali pendinginan suhu permukaan laut di Samudra Pasifik ekuator, yang memicu peningkatan pembentukan awan hujan dan curah hujan di atas normal di wilayah Indonesia.
+
+Siklon Tropis
+
+Sistem tekanan rendah non-frontal berskala besar yang berkembang di atas perairan tropis hangat dengan pusaran angin kencang melingkar dan wilayah hujan badai terorganisir.
+
+SPECI
+
+Aerodrome Special Meteorological Report — laporan sandi cuaca khusus bandara yang diterbitkan sewaktu-waktu ketika terjadi perubahan cuaca signifikan secara mendadak.
+
+Indian Ocean Dipole (IOD)
+
+Fenomena perbedaan suhu permukaan laut antara Samudra Hindia bagian barat (pantai timur Afrika) dan Samudra Hindia bagian timur (perairan barat Sumatra/Jawa).
+
+Isobar
+
+Garis khayal pada peta cuaca yang menghubungkan tempat-tempat dengan tekanan atmosfer yang sama yang telah direduksi ke permukaan laut rata-rata.
+
+Magnitudo
+
+Ukuran besaran energi yang dilepaskan di pusat gempa bumi, dihitung secara instrumental dari rekaman seismograf (skala logaritmik tanpa batas).
+
+TAF (Terminal Aerodrome Forecast)
+
+Prakiraan cuaca resmi untuk area bandara dalam radius 5 mil laut, berlaku untuk periode waktu tertentu (biasanya 24 atau 30 jam).
+
+CAVOK (Ceiling and Visibility OK)
+
+Istilah sandi saat kondisi cuaca bandara sangat baik: jarak pandang mendatar 10 km atau lebih, tidak ada awan di bawah 5.000 kaki, dan tidak ada fenomena cuaca berbahaya.
+
+Madden-Julian Oscillation (MJO)
+
+Gelombang atmosfer tropis intra-musiman yang merambat dari barat ke timur di wilayah ekuator setiap 30-60 hari, mempengaruhi aktivitas konveksi dan curah hujan.
+
+Skala MMI (Modified Mercalli Intensity)
+
+Skala deskriptif (I sampai XII) yang mengukur tingkat getaran gempa bumi berdasarkan dampak kerusakan dan getaran yang dirasakan oleh manusia dan bangunan di lokasi tertentu.
+
+Titik Embun (Dew Point)
+
+Suhu udara saat uap air di dalamnya mulai mengembun menjadi tetesan air (kondensasi) pada tekanan konstan. Semakin dekat titik embun dengan suhu aktual, semakin tinggi kelembapan udara.
+
+Hari Tanpa Hujan (HTH)
+
+Jumlah hari berturut-turut di mana tidak terjadi hujan atau curah hujan kurang dari 1 mm per hari, digunakan untuk memonitor potensi kekeringan meteorologis.
+
+Hujan Konvektif
+
+Hujan yang terjadi akibat proses pemanasan intensif permukaan bumi oleh radiasi matahari yang memicu naiknya massa udara hangat dan lembap ke atmosfer atas.
+
+InaTEWS (Indonesia Tsunami Early Warning System)
+
+Sistem peringatan dini tsunami nasional Indonesia yang dikelola oleh BMKG untuk mendeteksi potensi tsunami dalam waktu kurang dari 5 menit setelah gempa.
+
+Windshear
+
+Perubahan mendadak pada kecepatan dan/atau arah angin dalam jarak pendek di sepanjang lintasan terbang pesawat, sangat berbahaya saat fase take-off atau landing.
+
+Kelembapan Relatif (RH)
+
+Perbandingan antara jumlah uap air aktual di udara dengan jumlah maksimum uap air yang mampu ditampung udara pada suhu dan tekanan tertentu, dinyatakan dalam persen (%).
+
+QNH
+
+Pengaturan tekanan altimeter barometer stasiun yang disesuaikan ke permukaan laut rata-rata (Mean Sea Level) menurut atmosfer standar, sehingga altimeter pesawat membaca elevasi landasan.
+
+ShakeMap
+
+Peta estimasi tingkat guncangan gempa bumi (ground motion) yang dihasilkan secara otomatis oleh sistem BMKG sesaat setelah kejadian gempa bumi.
+

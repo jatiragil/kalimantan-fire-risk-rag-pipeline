@@ -54,6 +54,7 @@ def setup_database() -> None:
                         chunk_text   TEXT        NOT NULL,
                         content_hash CHAR(64)    NOT NULL,
                         embedding    vector({EMBEDDING_DIM}) NOT NULL,
+                        metadata     JSONB       DEFAULT '{{}}'::jsonb,
                         created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         CONSTRAINT unique_embedding_chunk
                             UNIQUE (document_id, chunk_index)
@@ -64,6 +65,12 @@ def setup_database() -> None:
                 cur.execute("""
                     CREATE INDEX IF NOT EXISTS idx_embeddings_hnsw
                     ON embeddings USING hnsw (embedding vector_cosine_ops);
+                """)
+
+                log.info("Membuat GIN index untuk metadata...")
+                cur.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_embeddings_metadata
+                    ON embeddings USING GIN (metadata);
                 """)
 
                 log.info("Membuat tabel raw_weather...")

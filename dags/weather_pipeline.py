@@ -6,48 +6,56 @@ default_args = {
     'owner': 'jati',
     'depends_on_past': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=1),
+    'retry_delay': timedelta(minutes=2),
 }
 
 with DAG(
     dag_id='weather_karhutla_pipeline',
     default_args=default_args,
-    description='Pipeline cuaca dan karhutla otomatis',
+    description='Dual-Pipeline: Weather Data & Karhutla RAG Documents',
     schedule='0 1 * * *',
     start_date=datetime(2026, 11, 1),
     catchup=False,
 ) as dag:
 
-    # TASK 1: setup database
+    # TASK 1: Setup Database (Single Source of Truth)
     task_setup_db = BashOperator(
         task_id='setup_database',
         bash_command='cd /opt/airflow && python -m src.setup_db',
     )
 
-    # Task 2: Ingest cuaca
-    task_ingest = BashOperator(
+    # TASK 2: Ingest Cuaca (Open-Meteo)
+    task_ingest_weather = BashOperator(
         task_id='ingest_weather_data',
         bash_command='cd /opt/airflow && python -m src.ingest_weather',
     )
+    task_dbt_deps = BashOperator(
+        task_id='dbt_deps',
+        bash_command='cd /opt/airflow/weather_analytics && dbt deps',
+    )
 
-    # Task 3: Transformasi cuaca (dbt run)
+    # TASK 3: Transformasi Cuaca (dbt run)
     task_dbt_run = BashOperator(
         task_id='dbt_run',
-        bash_command='cd /opt/airflow/weather_analytics && dbt run',
+        bash_command='cd /opt/airflow/weather_analytics && dbt run --profiles-dir .',
     )
 
-    # Task 4: Testing cuaca (dbt test)
+    # TASK 4: Testing Cuaca (dbt test)
     task_dbt_test = BashOperator(
         task_id='dbt_test',
-        bash_command='cd /opt/airflow/weather_analytics && dbt test',
+        bash_command='cd /opt/airflow/weather_analytics && dbt test --profiles-dir .',
     )
 
-    # Task 5: Embedding dokumen (RAG)
-    task_embed = BashOperator(
-        task_id='embed_documents',
-        bash_command='cd /opt/airflow && python -m src.process_docs',
+    # TASK 5: Ingestion Dokumen (PDF, OCR, Embedding)
+    task_ingest_docs = BashOperator(
+        task_id='ingest_documents',
+        bash_command='cd /opt/airflow && python -m src.ingest_documents',
+        execution_timeout=timedelta(minutes=30), # Beri waktu 30 menit untuk OCR
     )
 
-    # setup DB -> Ingest -> (dbt_run & embed secara paralel) -> dbt_test
-    task_setup_db >> task_ingest >> [task_dbt_run, task_embed]
-    task_dbt_run >> task_dbt_test
+    # ALUR DEPENDENSI
+    # 1. Setup DB selesai -> Ingest Cuaca
+    # 2. Ingest Cuaca selesai -> Jalan paralel: (dbt_run) DAN (ingest_documents)
+    # 3. dbt_run selesai -> dbt_test
+    task_setup_db >> task_ingest_weather >> [task_dbt_deps, task_ingest_docs]
+    task_dbt_deps >> task_dbt_run >> task_dbt_test

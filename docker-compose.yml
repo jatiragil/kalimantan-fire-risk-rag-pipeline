@@ -12,22 +12,47 @@ x-airflow-common:
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
     - AIRFLOW__CORE__PARALLELISM=2
     - AIRFLOW__CORE__DAG_CONCURRENCY=2
-    - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET_KEY}
+    - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET_KEY:-supersecretkey}
     - AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT=300
     - AIRFLOW__WEBSERVER__WORKERS=1
     - DATABASE_URL=${DATABASE_URL}
     - GEMINI_API_KEY=${GEMINI_API_KEY}
+    - DB_HOST=${DB_HOST}
+    - DB_PORT=${DB_PORT}
+    - DB_NAME=${DB_NAME}
+    - DB_USER=${DB_USER}
+    - DB_PASS=${DB_PASS}
+    - DB_SSLMODE=${DB_SSLMODE}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./src:/opt/airflow/src
     - ./weather_analytics:/opt/airflow/weather_analytics
     - ./data:/opt/airflow/data
-    - ~/.dbt:/home/airflow/.dbt
+    - ./weather_analytics/profiles.yml:/home/airflow/.dbt/profiles.yml
   depends_on:
     postgres-airflow:
       condition: service_healthy
+    postgres-lokal:
+      condition: service_healthy
 
 services:
+  postgres-lokal:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: karhutlarag
+    ports:
+      - "5433:5432" 
+    volumes:
+      - local_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d karhutlarag"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 256m
+
   postgres-airflow:
     image: postgres:13
     environment:
@@ -45,7 +70,7 @@ services:
 
   airflow-init:
     <<: *airflow-common
-    command: bash -c "sleep 10 && airflow db upgrade"
+    command: bash -c "sleep 30 && airflow db upgrade"
     environment:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_AIRFLOW_USER}:${DB_AIRFLOW_PASSWORD}@postgres-airflow/${DB_AIRFLOW_DB}
       - _AIRFLOW_DB_UPGRADE=true
@@ -80,3 +105,4 @@ services:
 
 volumes:
   airflow_db:
+  local_db:
