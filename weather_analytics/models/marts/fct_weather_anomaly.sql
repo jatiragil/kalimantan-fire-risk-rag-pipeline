@@ -28,12 +28,12 @@ SELECT
     rolling_avg_temp,
     rolling_std_temp,
     CASE
-        WHEN rolling_std_temp > 0
+        WHEN rolling_std_temp > 0.1 
         THEN (temperature_max - rolling_avg_temp) / rolling_std_temp
         ELSE 0.0
     END AS z_score,
     CASE
-        WHEN rolling_std_temp > 0
+        WHEN rolling_std_temp > 0.1 
          AND ABS((temperature_max - rolling_avg_temp) / rolling_std_temp)
              > {{ var('anomaly_z_threshold', 3.0) }}
         THEN TRUE ELSE FALSE
